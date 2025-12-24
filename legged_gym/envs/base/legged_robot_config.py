@@ -61,7 +61,21 @@ class LeggedRobotCfg(BaseConfig):
         num_rows= 10 # number of terrain rows (levels)
         num_cols = 20 # number of terrain cols (types)
         # terrain types: [smooth slope, rough slope, stairs up, stairs down, discrete]
-        terrain_proportions = [0.1, 0.1, 0.35, 0.25, 0.2]
+        nums_terrain_types = 20
+        terrain_proportions = [1 / nums_terrain_types] * nums_terrain_types  # must sum to 1.0
+        terrain_proportions = [0.05, 0.05, 
+                               0.04, 0.04, 
+                               0.05, 0.03, 
+                               0.03, 0.03, 
+                               0.03, 0.03, 
+                               0.04, 0.04, 
+                               0.06, 0.06, 0.06, 
+                               0.05, 0.04, 
+                               0.11, 0.11, 
+                               0.05]
+        terrain_proportions = [0] * 80
+        terrain_proportions[17] = 0.5
+        terrain_proportions[18] = 0.5
         # trimesh only:
         slope_treshold = 0.75 # slopes above this threshold will be corrected to vertical surfaces
 

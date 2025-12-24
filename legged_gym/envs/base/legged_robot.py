@@ -609,6 +609,44 @@ class LeggedRobot(BaseTask):
         tm_params.dynamic_friction = self.cfg.terrain.dynamic_friction
         tm_params.restitution = self.cfg.terrain.restitution
         self.gym.add_triangle_mesh(self.sim, self.terrain.vertices.flatten(order='C'), self.terrain.triangles.flatten(order='C'), tm_params)   
+
+        # --- MODIFIED PART START: ADD EXTRA MESHES LIKE STAIRS ---
+        # 检查 terrain 对象是否有 trimeshes 列表
+        if hasattr(self.terrain, 'trimeshes') and self.terrain.trimeshes:
+            print(f"Found {len(self.terrain.trimeshes)} additional meshes to add (e.g., hollow stairs)...")
+            
+            # 为这些额外的网格创建一个新的参数对象
+            step_tm_params = gymapi.TriangleMeshParams()
+            step_tm_params.static_friction = self.cfg.terrain.static_friction
+            step_tm_params.dynamic_friction = self.cfg.terrain.dynamic_friction
+            step_tm_params.restitution = self.cfg.terrain.restitution
+            
+            # 将每个台阶网格添加到仿真中
+            for i, (vertices, triangles) in enumerate(self.terrain.trimeshes):
+                step_tm_params.nb_vertices = vertices.shape[0]
+                step_tm_params.nb_triangles = triangles.shape[0]
+                
+                # 重要：因为顶点坐标已经是世界坐标，所以这里的变换位置是(0,0,0)
+                step_tm_params.transform.p.x = 0.0
+                step_tm_params.transform.p.y = 0.0
+                step_tm_params.transform.p.z = 0.0
+
+                if i == 0:
+                    # 只打印第一个台阶的信息，避免刷屏
+                    print(f">>> DEBUG: Adding first step mesh. It has {vertices.shape[0]} vertices.")
+                    # 打印第一个顶点的坐标，看看Z值是不是大于0
+                    # print(f"    First vertex coordinate: {vertices[0]}")
+                    # 打印中心点坐标，看看它的大概位置
+                    center_coord = np.mean(vertices, axis=0)
+                    # print(f"    Approximate center: {center_coord}")
+
+                # 将一个台阶添加到仿真中
+                self.gym.add_triangle_mesh(self.sim, vertices.flatten(order='C'), triangles.flatten(order='C'), step_tm_params)
+            
+            print("Additional meshes added.")
+
+        # --- MODIFIED PART END ---
+
         self.height_samples = torch.tensor(self.terrain.heightsamples).view(self.terrain.tot_rows, self.terrain.tot_cols).to(self.device)
 
     def _create_envs(self):
