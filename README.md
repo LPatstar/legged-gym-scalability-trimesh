@@ -19,7 +19,7 @@ We pushed the simulation limits to explore the "large batch size" advantage:
 Standard `legged_gym` relies on 2.5D HeightFields. We implemented a full 3D Trimesh generation pipeline to support:
 - **Overhangs & Hollow Structures**: Caves, suspended grates, and hollow pyramids.
 - **Novel Terrains**: Gap, Concave Pit, Backfilled Mounds, Agricultural Ridge, etc.
-- **Stress Testing**: Designed specific geometric traps to analyze the limitations of blind policies (e.g., limb entrapment on hollow meshes).
+- **Stress Testing**: Designed specific geometric traps to analyze the limitations of policies (e.g., limb entrapment on hollow meshes).
 
 ---
 <!-- Below is the original README content -->
