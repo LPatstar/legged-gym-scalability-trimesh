@@ -1,3 +1,29 @@
+# Massively Parallel RL for Quadruped Locomotion: Scalability & Complex 3D Geometries
+
+**Course Project Report Implementation**  
+**Hardware Tested**: NVIDIA RTX 5090 (Blackwell Architecture)
+
+This repository is a fork of `legged_gym` that extends the original massively parallel PPO pipeline. It introduces a comprehensive analysis of scalability on next-gen hardware (up to 16,384 environments) and develops a custom **Trimesh Generation Pipeline** to train and test locomotion policies on complex, non-manifold 3D geometries.
+
+![Overview](Pics/Figure_1.png)
+*Figure 1: Visualization of ANYmal C traversing procedural Trimesh terrains trained on RTX 5090.*
+
+## Key Contributions
+
+### 1. Scalability Analysis on RTX 5090
+We pushed the simulation limits to explore the "large batch size" advantage:
+- **Extreme Parallelism**: Scaled up to **16,384 parallel environments**, achieving a peak throughput of **~255k Steps Per Second (SPS)**.
+- **Efficiency**: Identified the optimal batch configuration balancing wall-clock convergence speed with asymptotic performance.
+
+### 2. Custom 3D Trimesh Pipeline (Phase 3)
+Standard `legged_gym` relies on 2.5D HeightFields. We implemented a full 3D Trimesh generation pipeline to support:
+- **Overhangs & Hollow Structures**: Caves, suspended grates, and hollow pyramids.
+- **Novel Terrains**: Gap, Concave Pit, Backfilled Mounds, Agricultural Ridge, etc.
+- **Stress Testing**: Designed specific geometric traps to analyze the limitations of blind policies (e.g., limb entrapment on hollow meshes).
+
+---
+<!-- Below is the original README content -->
+
 # Isaac Gym Environments for Legged Robots #
 This repository provides the environment used to train ANYmal (and other robots) to walk on rough terrain using NVIDIA's Isaac Gym.
 It includes all components needed for sim-to-real transfer: actuator network, friction & mass randomization, noisy observations and random pushes during training.  
@@ -8,7 +34,7 @@ It includes all components needed for sim-to-real transfer: actuator network, fr
 
 ---
 
-### :bell: Announcement (09.01.2024) ###
+### Announcement (09.01.2024) ###
 
 With the shift from Isaac Gym to Isaac Sim at NVIDIA, we have migrated all the environments from this work to [Isaac Lab](https://github.com/isaac-sim/IsaacLab). Following this migration, this repository will receive limited updates and support. We encourage all users to migrate to the new framework for their applications.
 
@@ -25,6 +51,7 @@ Paper: https://arxiv.org/abs/2109.11978
 1. Create a new python virtual env with python 3.6, 3.7 or 3.8 (3.8 recommended)
 2. Install pytorch 1.10 with cuda-11.3:
     - `pip3 install torch==1.10.0+cu113 torchvision==0.11.1+cu113 torchaudio==0.10.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html`
+    > **RTX 5090 / Blackwell Note**: If you are running on an RTX 5090 like in our report, standard PyTorch binaries compatible with Python 3.8 may not support the Blackwell architecture. You may need to manually compile PyTorch 2.3.1+ or backport compute capabilities support.
 3. Install Isaac Gym
    - Download and install Isaac Gym Preview 3 (Preview 2 will not work!) from https://developer.nvidia.com/isaac-gym
    - `cd isaacgym/python && pip install -e .`
